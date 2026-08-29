@@ -1,0 +1,37 @@
+# Action 名稱
+name: Build
+# 觸發時機，當推送到分支 main 時
+on:
+  push:
+    branches: [ main ]
+# 執行的工作
+jobs:
+  # 工作名稱
+  deploy:
+    # 執行工作的虛擬機作業系統
+    runs-on: ubuntu-latest
+    # 工作步驟
+    steps:
+      # 步驟一：複製程式碼
+      - name: checkout
+        # 使用的 actions/checkout 複製程式碼
+        uses: actions/checkout@v5
+      # 步驟二：編譯
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+      # 步驟三：複製編譯好的 dist 和必要檔案到 deploy 資料夾
+      - name: Prepare Directory
+        run: |
+          mkdir deploy
+          cp -r dist deploy/
+          cp package.json deploy/
+          cp package-lock.json deploy/
+      # 步驟四：上傳 deploy 到 build 分支
+      - name: Upload dist to git
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: build
+          folder: deploy
+          single-commit: true
