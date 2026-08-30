@@ -3,7 +3,9 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
+import RefreshToken from '../models/refreshToken'
 import User from '../models/user'
+import { cookieOptions } from '../utils/refreshToken'
 
 const paramsSchema = yup.object({
   id: yup
@@ -169,10 +171,11 @@ export const changePassword = async (req: Request, res: Response) => {
 
   user.password = parsedBody.new_password
   await user.save()
+  await RefreshToken.deleteMany({ user: user._id })
 
-  res.status(StatusCodes.OK).json({
+  res.status(StatusCodes.OK).clearCookie('refresh', cookieOptions).json({
     success: true,
-    message: '密碼修改成功',
+    message: '密碼修改成功，請重新登入',
     result: {},
   })
 }

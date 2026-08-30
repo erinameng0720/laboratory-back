@@ -4,7 +4,7 @@ import * as middlewareAuth from '../middlewares/auth'
 
 const router = Router()
 
-// Public Authentication APIs
+// Public Authentication APIs。帳號建立不開放註冊，僅能由 Admin 透過 POST /user 建立。
 router.post('/login', middlewareAuth.login, controllerAuth.login)
 router.post('/refresh', controllerAuth.refresh)
 router.delete('/logout', controllerAuth.logout)
